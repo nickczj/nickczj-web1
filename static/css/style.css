@@ -1,0 +1,13 @@
+body {
+    margin: 0;
+}
+#textbox {
+    width: 100vw;
+    height: 100vh;
+
+    /* Center text with flexbox */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+}

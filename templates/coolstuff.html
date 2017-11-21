@@ -1,0 +1,56 @@
+{% extends "header.html" %}
+
+{% block body %}
+
+<div role="tabpanel">
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#stocks" aria-controls="stocks" role="tab" data-toggle="tab">Stocks</a></li>
+    <li role="presentation"><a href="#pool" aria-controls="pool" role="tab" data-toggle="tab">Pool</a></li>
+    <li role="presentation"><a href="#cats" aria-controls="cats" role="tab" data-toggle="tab">Cats</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+	<div class="tab-content">
+	  <div role="tabpanel" class="tab-pane fade in active" id="stocks">
+		<ul>
+		   <li><a href="/googl/" target="blank">Google</a></li>
+		   <li><a href="/aapl/" target="blank">Apple</a></li>
+		</ul>
+	  </div>
+
+	  <div role="tabpanel" class="tab-pane fade" id="pool">
+		<p>A game while more cool things are added.</p>
+		<div class="miniclip-game-embed" data-game-name="8-ball-pool-multiplayer" data-theme="0" data-width="750" data-height="520" data-language="en">
+		</div>
+		
+		<script src="//static.miniclipcdn.com/js/game-embed.js"></script>
+	  </div>
+
+	  <div role="tabpanel" class="tab-pane fade" id="cats">
+		<p>Take a break and recuperate with some cats.<p>
+		<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0;
+								  overflow: hidden; max-width: 100%; } 
+			   .embed-container iframe, 
+			   .embed-container object, 
+			   .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; 
+									    height: 100%; }
+		</style>
+		<div class='embed-container'>
+			<iframe
+			  frameborder="0" style="border:0"
+			  src="https://www.google.com/maps/embed/v1/search
+				?key=AIzaSyC38CDXooaNE-acM188ptilo_bSg_d5oXA
+				&q=cat+cafe+in+Singapore
+				&zoom=13" allowfullscreen>
+			</iframe>
+		</div>
+	  </div>
+	  
+	</div>
+</div>
+
+<script src="../static/js/jquery.js"></script>
+<script src="../static/js/bootstrap.js"></script>
+
+{% endblock %}

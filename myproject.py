@@ -6,15 +6,20 @@ def hello():
     import requests
     import json
 
-    response = requests.get("https://api.nasa.gov/planetary/apod?api_key=37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ")
-    data = response.json()
+    while True:
+        try:
+            response = requests.get("https://api.nasa.gov/planetary/apod?api_key=37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ")
+            data = response.json()
+		
+        except requests.exceptions.ConnectionError:
+            return render_template("main.html", header="", date="", explanation="", title="", url="static/images/500.jpg")
 
-    date = data['date']
+    date = data['date'] + ": NASA's Astronomy Picture of the Day"
     explanation = data['explanation']
     title = data['title']
     url = data['url']
 
-    return render_template("main.html", date=date, explanation=explanation, title=title, url=url)
+    return render_template("main.html", header="Take a moment and soak in the wonders of space.", date=date, explanation=explanation, title=title, url=url)
 
 @app.route("/notepad/")
 def notepad():
@@ -29,16 +34,21 @@ def projects():
     import requests
     import json
 
-    response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date=2017-05-24&api_key=37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ")
-    info = response.json()
-    max_sol = info['photos'][0]['rover']['max_sol']
-    max_date = info['photos'][0]['rover']['max_date']
-    response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol={}&api_key=37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ".format(max_sol))
-    data = response.json()
+    while True:
+        try:
+            response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date=2017-05-24&api_key=37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ")
+            info = response.json()
+            max_sol = info['photos'][0]['rover']['max_sol']
+            max_date = info['photos'][0]['rover']['max_date']
+            response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol={}&api_key=37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ".format(max_sol))
+            data = response.json()
 
-    d = data['photos']
-    ld = len(d)
-    e = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
+            d = data['photos']
+            ld = len(d)
+            e = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
+
+        except requests.exceptions.ConnectionError:
+            return render_template("main.html", header="", date="", explanation="", title="", url="../static/images/500.jpg")
 
     return render_template("projects.html", images=e, ld=ld, date=max_date)
 

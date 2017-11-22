@@ -1,4 +1,5 @@
 from flask import Flask, render_template, send_from_directory
+import requests
 
 app = Flask(__name__, static_folder='static')
 
@@ -6,25 +7,24 @@ OLD_API_KEY = "37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ"
 API_KEY = "7UoReKEbxnGRMqwkVb9IBvhBmzCtpYdAtPFbnG90"
 
 
+def get_apod_pics():
+    try:
+        header = "Take a moment and soak in the wonders of space."
+        response = requests.get("https://api.nasa.gov/planetary/apod?api_key={}".format(API_KEY))
+        data = response.json()
+        date = data['date'] + ": NASA's Astronomy Picture of the Day"
+        explanation = data['explanation']
+        title = data['title']
+        url = data['url']
+
+        return header, date, explanation, title, url
+    except requests.exceptions.ConnectionError:
+        return "", "", "", "", ""
+
+
 @app.route("/")
 def hello():
-    import requests
-
-    while True:
-        try:
-            response = requests.get("https://api.nasa.gov/planetary/apod?api_key={}".format(API_KEY))
-            data = response.json()
-            date = data['date'] + ": NASA's Astronomy Picture of the Day"
-            explanation = data['explanation']
-            title = data['title']
-            url = data['url']
-
-            return render_template("main.html", header="Take a moment and soak in the wonders of space.", date=date,
-                                   explanation=explanation, title=title, url=url)
-
-        except requests.exceptions.ConnectionError:
-            return render_template("main.html", header="", date="", explanation="", title="",
-                                   url="static/images/500.jpg")
+    return render_template("main.html", header=header, date=date, explanation=explanation, title=title, url=url)
 
 
 @app.route("/notepad/")
@@ -39,8 +39,6 @@ def coolstuff():
 
 @app.route("/projects/")
 def projects():
-    import requests
-
     while True:
         try:
             response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date="

@@ -8,14 +8,10 @@ API_KEY = "7UoReKEbxnGRMqwkVb9IBvhBmzCtpYdAtPFbnG90"
 def hello():
     import requests
     import json
-
-    response = requests.get("https://api.nasa.gov/planetary/apod?api_key={}".format(API_KEY))
-    data = response.json()
-
-    date = data['date']
+	
     while True:
         try:
-            response = requests.get("https://api.nasa.gov/planetary/apod?api_key=37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ")
+            response = requests.get("https://api.nasa.gov/planetary/apod?api_key={}".format(API_KEY))
             data = response.json()
 		
         except requests.exceptions.ConnectionError:
@@ -41,23 +37,14 @@ def projects():
     import requests
     import json
 
-    response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date=2017-05-24&api_key={}".format(API_KEY))
-    info = response.json()
-    max_sol = info['photos'][0]['rover']['max_sol']
-    max_date = info['photos'][0]['rover']['max_date']
-    response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol={}&api_key={}".format(max_sol, API_KEY))
-    data = response.json()
 
-    d = data['photos']
-    ld = len(d)
-    e = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
     while True:
         try:
-            response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date=2017-05-24&api_key=37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ")
+            response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date=2017-05-24&api_key={}".format(API_KEY))
             info = response.json()
             max_sol = info['photos'][0]['rover']['max_sol']
             max_date = info['photos'][0]['rover']['max_date']
-            response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol={}&api_key=37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ".format(max_sol))
+            response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol={}&api_key={}".format(max_sol, API_KEY))
             data = response.json()
 
             d = data['photos']

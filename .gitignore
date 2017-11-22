@@ -1,2 +1,3 @@
-/myprojectenv/
-/__pycache__/
+/myprojectenv
+/__pycache__
+/.idea

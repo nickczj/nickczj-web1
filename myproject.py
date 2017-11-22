@@ -47,7 +47,7 @@ def get_rover_pics():
         images = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
     except requests.exceptions.ConnectionError:
         images, max_date = [], ""
-    threading.Timer(60, get_rover_pics).start()
+    threading.Timer(600, get_rover_pics).start()
 
 
 get_apod_pics()

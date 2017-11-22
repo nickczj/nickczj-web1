@@ -1,13 +1,22 @@
 from flask import Flask, render_template, send_from_directory
 import requests
+import threading
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__, static_folder='static')
 
-OLD_API_KEY = "37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ"
-API_KEY = "7UoReKEbxnGRMqwkVb9IBvhBmzCtpYdAtPFbnG90"
+API_KEY = "37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ"
+OLD_API_KEY = "7UoReKEbxnGRMqwkVb9IBvhBmzCtpYdAtPFbnG90"
+
+header, date, explanation, title, url = "", "", "", "", ""
+images, max_date = [], ""
 
 
 def get_apod_pics():
+    logging.info("getting apod data")
+    global header, date, explanation, title, url
     try:
         header = "Take a moment and soak in the wonders of space."
         response = requests.get("https://api.nasa.gov/planetary/apod?api_key={}".format(API_KEY))
@@ -16,10 +25,33 @@ def get_apod_pics():
         explanation = data['explanation']
         title = data['title']
         url = data['url']
-
-        return header, date, explanation, title, url
     except requests.exceptions.ConnectionError:
-        return "", "", "", "", ""
+        header, date, explanation, title, url = "", "", "", "", "../static/images/500.jpg"
+    threading.Timer(600, get_apod_pics).start()
+
+
+def get_rover_pics():
+    logging.info("get rover data")
+    global images, max_date
+    try:
+        response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date="
+                                "2017-05-24&api_key={}".format(API_KEY))
+        info = response.json()
+        max_sol = info['photos'][0]['rover']['max_sol']
+        max_date = info['photos'][0]['rover']['max_date']
+
+        response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol={}&api_key="
+                                "{}".format(max_sol, API_KEY))
+        data = response.json()
+        d = data['photos']
+        images = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
+    except requests.exceptions.ConnectionError:
+        images, max_date = [], ""
+    threading.Timer(60, get_rover_pics).start()
+
+
+get_apod_pics()
+get_rover_pics()
 
 
 @app.route("/")
@@ -39,26 +71,7 @@ def coolstuff():
 
 @app.route("/projects/")
 def projects():
-    while True:
-        try:
-            response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date="
-                                    "2017-05-24&api_key={}".format(API_KEY))
-            info = response.json()
-            max_sol = info['photos'][0]['rover']['max_sol']
-            max_date = info['photos'][0]['rover']['max_date']
-            response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol={}&api_key="
-                                    "{}".format(max_sol, API_KEY))
-            data = response.json()
-
-            d = data['photos']
-            ld = len(d)
-            e = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
-
-            return render_template("projects.html", images=e, ld=ld, date=max_date)
-
-        except requests.exceptions.ConnectionError:
-            return render_template("main.html", header="", date="", explanation="", title="",
-                                   url="../static/images/500.jpg")
+    return render_template("projects.html", images=images, max_date=max_date)
 
 
 @app.route("/about/")

@@ -2,6 +2,7 @@ from flask import Flask, render_template, send_from_directory
 import requests
 import threading
 import logging
+import urllib.request
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -24,10 +25,12 @@ def get_apod_pics():
         date = data['date'] + ": NASA's Astronomy Picture of the Day"
         explanation = data['explanation']
         title = data['title']
-        url = data['url']
+        link = data['url']
+        urllib.request.urlretrieve(link, "static/images/apod.jpg")
+        url = "../static/images/apod.jpg"
     except requests.exceptions.ConnectionError:
         header, date, explanation, title, url = "", "", "", "", "../static/images/500.jpg"
-    threading.Timer(600, get_apod_pics).start()
+    threading.Timer(1200, get_apod_pics).start()
 
 
 def get_rover_pics():
@@ -47,7 +50,7 @@ def get_rover_pics():
         images = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
     except requests.exceptions.ConnectionError:
         images, max_date = [], ""
-    threading.Timer(600, get_rover_pics).start()
+    threading.Timer(1200, get_rover_pics).start()
 
 
 get_apod_pics()

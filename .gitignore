@@ -2,3 +2,4 @@
 /__pycache__
 /.idea
 /static/images/apod.jpg
+flask.log

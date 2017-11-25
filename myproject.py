@@ -40,8 +40,7 @@ def get_apod_pics():
         bashCommand = "convert ../static/images/apod.jpg -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
                       " -colorspace RGB ../static/images/apod.jpg"
         if os.name == 'posix':
-            process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-            output, error = process.communicate()
+            subprocess.call(bashCommand, shell=True)
     except requests.exceptions.ConnectionError:
         header, date, explanation, title, url = "", "", "", "", "../static/images/500.jpg"
     threading.Timer(600, get_apod_pics).start()
@@ -204,4 +203,4 @@ def keybase():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)

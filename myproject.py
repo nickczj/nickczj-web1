@@ -8,11 +8,14 @@ import subprocess
 
 
 app = Flask(__name__, static_folder='static')
-app.jinja_env.cache = {}
 
-handler = logging.FileHandler('/var/log/flask/flask.log')  # errors logged to this file
-handler.setLevel(logging.DEBUG) # only log errors and above
-app.logger.addHandler(handler)  # attach the handler to the app's logger
+logging.basicConfig(level=logging.DEBUG)
+
+if not app.debug:
+    import logging
+    file_handler = logging.FileHandler('flask.log')
+    file_handler.setLevel(logging.DEBUG)
+    app.logger.addHandler(file_handler)
 
 API_KEY = "37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ"
 OLD_API_KEY = "7UoReKEbxnGRMqwkVb9IBvhBmzCtpYdAtPFbnG90"
@@ -22,7 +25,7 @@ images, max_date = [], ""
 
 
 def get_apod_pics():
-    logging.info("getting apod data")
+    app.logger.info("getting apod data")
     global header, date, explanation, title, url
     try:
         header = "Take a moment and soak in the wonders of space."
@@ -45,7 +48,7 @@ def get_apod_pics():
 
 
 def get_rover_pics():
-    logging.info("get rover data")
+    app.logger.info("get rover data")
     global images, max_date
     try:
         response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date="
@@ -201,4 +204,4 @@ def keybase():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0')

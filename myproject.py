@@ -3,10 +3,16 @@ import requests
 import threading
 import logging
 import urllib.request
+import os
+import subprocess
 
-logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__, static_folder='static')
+app.jinja_env.cache = {}
+
+handler = logging.FileHandler('/var/log/flask/flask.log')  # errors logged to this file
+handler.setLevel(logging.DEBUG) # only log errors and above
+app.logger.addHandler(handler)  # attach the handler to the app's logger
 
 API_KEY = "37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ"
 OLD_API_KEY = "7UoReKEbxnGRMqwkVb9IBvhBmzCtpYdAtPFbnG90"
@@ -28,9 +34,14 @@ def get_apod_pics():
         link = data['url']
         urllib.request.urlretrieve(link, "static/images/apod.jpg")
         url = "../static/images/apod.jpg"
+        bashCommand = "convert ../static/images/apod.jpg -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
+                      " -colorspace RGB ../static/images/apod.jpg"
+        if os.name == 'posix':
+            process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+            output, error = process.communicate()
     except requests.exceptions.ConnectionError:
         header, date, explanation, title, url = "", "", "", "", "../static/images/500.jpg"
-    threading.Timer(1200, get_apod_pics).start()
+    threading.Timer(600, get_apod_pics).start()
 
 
 def get_rover_pics():
@@ -50,7 +61,7 @@ def get_rover_pics():
         images = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
     except requests.exceptions.ConnectionError:
         images, max_date = [], ""
-    threading.Timer(1200, get_rover_pics).start()
+    threading.Timer(600, get_rover_pics).start()
 
 
 get_apod_pics()

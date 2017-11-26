@@ -43,7 +43,9 @@ def get_apod_pics():
         bashCommand = "convert ../static/images/apod.jpg -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
                       " -colorspace RGB ../static/images/apod.jpg"
         if os.name == 'posix':
-            subprocess.call(bashCommand, shell=True)
+            # subprocess.call(bashCommand, shell=True)
+            process = subprocess.Popen(bashCommand, shell=True)
+            process.kill()
     except requests.exceptions.ConnectionError:
         header, date, explanation, title, url = "", "", "", "", "../static/images/500.jpg"
     threading.Timer(600, get_apod_pics).start()
@@ -66,17 +68,17 @@ def get_rover_pics():
         url_images = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
         print(url_images)
 
+        bashCommand = ""
+
         for i in range(len(d)):
-            img_location = "../static/images/curiosity/curiosity_{}.jpg".format(i)
+            img_location = "static/images/curiosity/curiosity_{}.jpg".format(i)
             urllib.request.urlretrieve(url_images[i], img_location)
             images.append(img_location)
-            bashCommand = "convert {} -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
-                          " -colorspace RGB {}".format(img_location, img_location)
-            if os.name == 'posix':
-                subprocess.call(bashCommand, shell=True)
+            bashCommand += "convert {} -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
+                          " -colorspace RGB {};".format(img_location, img_location)
 
-        print(images)
-
+        processtwo = subprocess.Popen(bashCommand, shell=True)
+        processtwo.kill()
     except requests.exceptions.ConnectionError:
         images, max_date = [], ""
     threading.Timer(600, get_rover_pics).start()

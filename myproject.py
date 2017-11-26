@@ -36,7 +36,10 @@ def get_apod_pics():
         title = data['title']
         link = data['url']
         urllib.request.urlretrieve(link, "static/images/apod.jpg")
-        url = "../static/images/apod.jpg"
+        if 'jpg' in data['url']:
+            url = "../static/images/apod.jpg"
+        else:
+            url = data['url']
         bashCommand = "convert ../static/images/apod.jpg -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
                       " -colorspace RGB ../static/images/apod.jpg"
         if os.name == 'posix':

@@ -40,11 +40,11 @@ def get_apod_pics():
             url = "../static/images/apod.jpg"
         else:
             url = data['url']
-        bashCommand = "convert ../static/images/apod.jpg -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
-                      " -colorspace RGB ../static/images/apod.jpg"
+        bash_command = "convert ../static/images/apod.jpg -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
+                       " -colorspace RGB ../static/images/apod.jpg"
         if os.name == 'posix':
             # subprocess.call(bashCommand, shell=True)
-            process = subprocess.Popen(bashCommand, shell=True)
+            process = subprocess.Popen(bash_command, shell=True)
             process.kill()
     except requests.exceptions.ConnectionError:
         header, date, explanation, title, url = "", "", "", "", "../static/images/500.jpg"
@@ -67,19 +67,20 @@ def get_rover_pics():
         d = data['photos']
         url_images = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
 
-        bashCommand = ""
+        bash_command = ""
 
         for i in range(len(d)):
             img_location = "static/images/curiosity_raw/curiosity_{}.jpg".format(i)
             urllib.request.urlretrieve(url_images[i], img_location)
             images.append("static/images/curiosity/curiosity_{}.jpg".format(i))
             if os.name == 'posix':
-            	bashCommand += "convert static/images/curiosity_raw/curiosity_{}.jpg -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
-                          " -colorspace RGB static/images/curiosity/curiosity_{}.jpg ;".format(i, i)
+                bash_command += "convert static/images/curiosity_raw/curiosity_{}.jpg -sampling-factor 4:2:0 -strip " \
+                               "-quality 85 -interlace JPEG -colorspace RGB static/images/curiosity/curiosity_{}" \
+                               ".jpg \n".format(i, i)
 
         print("~~~~~~~~~~~~~CONVERTING~~~~~~~~~~~~~")
-        process = subprocess.Popen(bashCommand, shell=True)
-        
+        process = subprocess.Popen(bash_command, shell=True)
+
     except requests.exceptions.ConnectionError:
         images, max_date = [], ""
     threading.Timer(600, get_rover_pics).start()

@@ -66,19 +66,20 @@ def get_rover_pics():
         data = response.json()
         d = data['photos']
         url_images = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
-        print(url_images)
 
         bashCommand = ""
 
         for i in range(len(d)):
-            img_location = "static/images/curiosity/curiosity_{}.jpg".format(i)
+            img_location = "static/images/curiosity_raw/curiosity_{}.jpg".format(i)
             urllib.request.urlretrieve(url_images[i], img_location)
-            images.append(img_location)
-            bashCommand += "convert {} -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
-                          " -colorspace RGB {};".format(img_location, img_location)
+            images.append("static/images/curiosity/curiosity_{}.jpg".format(i))
+            if os.name == 'posix':
+            	bashCommand += "convert static/images/curiosity_raw/curiosity_{}.jpg -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
+                          " -colorspace RGB static/images/curiosity/curiosity_{}.jpg ;".format(i, i)
 
-        processtwo = subprocess.Popen(bashCommand, shell=True)
-        processtwo.kill()
+        print("~~~~~~~~~~~~~CONVERTING~~~~~~~~~~~~~")
+        process = subprocess.Popen(bashCommand, shell=True)
+        
     except requests.exceptions.ConnectionError:
         images, max_date = [], ""
     threading.Timer(600, get_rover_pics).start()

@@ -3,4 +3,5 @@
 /.idea
 static/images/apod.jpg
 static/images/curiosity
+static/images/curiosity_raw
 flask.log

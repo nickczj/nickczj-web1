@@ -5,6 +5,7 @@ import logging
 import urllib.request
 import os
 import subprocess
+import mbp
 
 
 app = Flask(__name__, static_folder='static')
@@ -222,6 +223,11 @@ def purple_rain():
 @app.route("/keybase.txt")
 def keybase():
     return send_from_directory(app.static_folder, 'keybase.txt')
+
+
+@app.route("/mbp")
+def mbp():
+    mbp.mbp()
 
 
 if __name__ == "__main__":

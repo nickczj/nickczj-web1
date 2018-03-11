@@ -6,6 +6,7 @@ import urllib.request
 import os
 import subprocess
 import datetime
+import notepad
 
 
 app = Flask(__name__, static_folder='static')
@@ -72,9 +73,11 @@ def note_upload():
     note = request.get_json()
     print(type(note))
     # note_body = note['ops'][0]['insert']
-    note_body = json.loads(note, strict=False)
-    print(note_body['ops'][0]['insert'])
-    return note_body['ops'][0]['insert']
+    note_json = json.loads(note, strict=False)
+    note_body = note_json['ops'][0]['insert']
+    print(note_body)
+    notepad.create_file(note_body)
+    return request.response
 
 
 @app.route("/coolstuff/")

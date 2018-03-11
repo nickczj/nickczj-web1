@@ -43,7 +43,7 @@ def get_apod_pics():
         bash_command = "convert ../static/images/apod.jpg -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
                        " -colorspace RGB ../static/images/apod.jpg"
         if os.name == 'posix':
-            # subprocess.call(bashCommand, shell=True)
+            print("optimizing apod image")
             process = subprocess.Popen(bash_command, shell=True)
             process.kill()
     except requests.exceptions.ConnectionError:
@@ -51,45 +51,45 @@ def get_apod_pics():
     threading.Timer(600, get_apod_pics).start()
 
 
-def get_rover_pics():
-    app.logger.info("get rover data")
-    global images, max_date
-    try:
-        response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date="
-                                "2017-05-24&api_key={}".format(API_KEY))
-        info = response.json()
-        max_sol = info['photos'][0]['rover']['max_sol']
-        max_date = info['photos'][0]['rover']['max_date']
-
-        response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol={}&api_key="
-                                "{}".format(max_sol, API_KEY))
-        data = response.json()
-        d = data['photos']
-        print(d[0])
-        url_images = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
-
-        bash_command = ""
-
-        print("~~~~~~~~~~~~~CONVERTING~~~~~~~~~~~~~")
-        for i in range(len(d)):
-            img_location = "static/images/curiosity_raw/curiosity_{}.jpg".format(i)
-            urllib.request.urlretrieve(url_images[i], img_location)
-            images.append("static/images/curiosity/curiosity_{}.jpg".format(i))
-            if os.name == 'posix':
-                bash_command += "convert static/images/curiosity_raw/curiosity_{}.jpg -sampling-factor 4:2:0 -strip " \
-                               "-quality 85 -interlace JPEG -colorspace RGB static/images/curiosity/curiosity_{}" \
-                               ".jpg \n".format(i, i)
-            print("processing image {}", i)
-            process = subprocess.Popen(bash_command, shell=True)
-            process.kill()
-
-    except requests.exceptions.ConnectionError:
-        images, max_date = [], ""
-    threading.Timer(600, get_rover_pics).start()
+# def get_rover_pics():
+#     app.logger.info("get rover data")
+#     global images, max_date
+#     try:
+#         response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date="
+#                                 "2017-05-24&api_key={}".format(API_KEY))
+#         info = response.json()
+#         max_sol = info['photos'][0]['rover']['max_sol']
+#         max_date = info['photos'][0]['rover']['max_date']
+#
+#         response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol={}&api_key="
+#                                 "{}".format(max_sol, API_KEY))
+#         data = response.json()
+#         d = data['photos']
+#         print(d[0])
+#         url_images = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
+#
+#         bash_command = ""
+#
+#         print("~~~~~~~~~~~~~CONVERTING~~~~~~~~~~~~~")
+#         for i in range(len(d)):
+#             img_location = "static/images/curiosity_raw/curiosity_{}.jpg".format(i)
+#             urllib.request.urlretrieve(url_images[i], img_location)
+#             images.append("static/images/curiosity/curiosity_{}.jpg".format(i))
+#             if os.name == 'posix':
+#                 bash_command += "convert static/images/curiosity_raw/curiosity_{}.jpg -sampling-factor 4:2:0 -strip " \
+#                                "-quality 85 -interlace JPEG -colorspace RGB static/images/curiosity/curiosity_{}" \
+#                                ".jpg \n".format(i, i)
+#             print("processing image {}", i)
+#             process = subprocess.Popen(bash_command, shell=True)
+#             process.kill()
+#
+#     except requests.exceptions.ConnectionError:
+#         images, max_date = [], ""
+#     threading.Timer(3000, get_rover_pics).start()
 
 
 get_apod_pics()
-get_rover_pics()
+# get_rover_pics()
 
 
 @app.route("/")
@@ -109,7 +109,7 @@ def coolstuff():
 
 @app.route("/projects/")
 def projects():
-    return render_template("projects.html", images=images, max_date=max_date)
+    return render_template("projects.html")
 
 
 @app.route("/about/")

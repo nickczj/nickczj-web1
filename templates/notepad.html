@@ -18,11 +18,20 @@
 		  height:100%
 		}
 	</style>
+    <!-- Main Quill library -->
+    <script src="//cdn.quilljs.com/1.3.5/quill.js"></script>
+    <script src="//cdn.quilljs.com/1.3.5/quill.min.js"></script>
+
+    <!-- Theme included stylesheets -->
+    <link href="//cdn.quilljs.com/1.3.5/quill.snow.css" rel="stylesheet">
+    <link href="//cdn.quilljs.com/1.3.5/quill.bubble.css" rel="stylesheet">
+
 </head>
 
 <body>
-  <textarea id="textbox" form="notepad"></textarea>
-  <form id="notepad">
-	<input type="submit" value="Save">
-  </form>
+    <div id="editor-container">
+    </div>
+
+    <script type="text/javascript" src="../static/js/notepad.js"></script>
+
 </body>

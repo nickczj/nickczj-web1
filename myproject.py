@@ -1,15 +1,17 @@
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, request
 import requests
 import threading
 import logging
 import urllib.request
 import os
 import subprocess
+import datetime
 
 
 app = Flask(__name__, static_folder='static')
 
 logging.basicConfig(level=logging.DEBUG)
+log = app.logger
 
 if not app.debug:
     import logging
@@ -25,7 +27,7 @@ images, max_date = [], ""
 
 
 def get_apod_pics():
-    app.logger.info("getting apod data")
+    log.info(datetime.datetime.now().strftime("%H:%M:%S %d-%m-%Y") + " getting apod data")
     global header, date, explanation, title, url
     try:
         header = "Take a moment and soak in the wonders of space."
@@ -43,7 +45,7 @@ def get_apod_pics():
         bash_command = "convert ../static/images/apod.jpg -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
                        " -colorspace RGB ../static/images/apod.jpg"
         if os.name == 'posix':
-            print("optimizing apod image")
+            log.info("optimizing apod image")
             process = subprocess.Popen(bash_command, shell=True)
             process.kill()
     except requests.exceptions.ConnectionError:
@@ -51,45 +53,7 @@ def get_apod_pics():
     threading.Timer(600, get_apod_pics).start()
 
 
-# def get_rover_pics():
-#     app.logger.info("get rover data")
-#     global images, max_date
-#     try:
-#         response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?earth_date="
-#                                 "2017-05-24&api_key={}".format(API_KEY))
-#         info = response.json()
-#         max_sol = info['photos'][0]['rover']['max_sol']
-#         max_date = info['photos'][0]['rover']['max_date']
-#
-#         response = requests.get("https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol={}&api_key="
-#                                 "{}".format(max_sol, API_KEY))
-#         data = response.json()
-#         d = data['photos']
-#         print(d[0])
-#         url_images = [d[i]['img_src'][:4] + 's' + d[i]['img_src'][4:] for i in range(len(d))]
-#
-#         bash_command = ""
-#
-#         print("~~~~~~~~~~~~~CONVERTING~~~~~~~~~~~~~")
-#         for i in range(len(d)):
-#             img_location = "static/images/curiosity_raw/curiosity_{}.jpg".format(i)
-#             urllib.request.urlretrieve(url_images[i], img_location)
-#             images.append("static/images/curiosity/curiosity_{}.jpg".format(i))
-#             if os.name == 'posix':
-#                 bash_command += "convert static/images/curiosity_raw/curiosity_{}.jpg -sampling-factor 4:2:0 -strip " \
-#                                "-quality 85 -interlace JPEG -colorspace RGB static/images/curiosity/curiosity_{}" \
-#                                ".jpg \n".format(i, i)
-#             print("processing image {}", i)
-#             process = subprocess.Popen(bash_command, shell=True)
-#             process.kill()
-#
-#     except requests.exceptions.ConnectionError:
-#         images, max_date = [], ""
-#     threading.Timer(3000, get_rover_pics).start()
-
-
 get_apod_pics()
-# get_rover_pics()
 
 
 @app.route("/")
@@ -100,6 +64,17 @@ def hello():
 @app.route("/notepad/")
 def notepad():
     return render_template("notepad.html")
+
+
+@app.route("/note_upload", methods=['POST'])
+def note_upload():
+    import json
+    note = request.get_json()
+    print(type(note))
+    # note_body = note['ops'][0]['insert']
+    note_body = json.loads(note, strict=False)
+    print(note_body['ops'][0]['insert'])
+    return note_body['ops'][0]['insert']
 
 
 @app.route("/coolstuff/")

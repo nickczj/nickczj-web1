@@ -66,6 +66,7 @@ def is_new_file(file_name):
                 return False, item['id']
         return True, 0
 
+
 def sync_file(note):
     return True
 
@@ -74,8 +75,6 @@ def create_file(note):
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('drive', 'v3', http=http)
-
-    
 
 
 def main():

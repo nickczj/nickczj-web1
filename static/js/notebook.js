@@ -18,9 +18,9 @@ setInterval(function() {
   if (change.length() > 0) {
     console.log('Saving changes', change);
 
-    $.post('/your-endpoint', {
-      doc: JSON.stringify(quill.getContents())
-    });
+    // $.post('/your-endpoint', {
+    //   doc: JSON.stringify(quill.getContents())
+    // });
     
     console.log(quill.getContents());
     change = new Delta();
@@ -41,8 +41,4 @@ form.onsubmit = function() {
   note.value = JSON.stringify(quill.getContents());
   
   console.log("Submitted", $(form).serialize(), $(form).serializeArray());
-  
-  // No back end to actually submit to!
-  alert('Open the console to see the submit data!');
-  return false;
 };

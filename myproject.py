@@ -71,11 +71,17 @@ def notebook():
     return render_template("notebook.html", notes=notes)
 
 
-@app.route("/note_upload", methods=['POST'])
-def note_upload():
+@app.route("/note_upload/<id>", methods=['POST'])
+def note_upload(id):
+    import json
     note = request.form['note']
-    print(note)
-    return request.response
+    note_body = json.loads(note, strict=False)
+    content = note_body['ops'][0]['insert']
+    directory = os.fsencode("./static/notes")
+    file = open("./static/notes/{}".format(id), 'w')
+    file.write(content)
+    notes = [os.fsdecode(file) for file in os.listdir(directory)]
+    return render_template("notebook.html", notes=notes)
 
 
 @app.route("/notebook/<id>")

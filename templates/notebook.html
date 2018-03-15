@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+    <title>Nicholas Chow</title>
+	<link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}" type = "text/css"/>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" type = "text/css"/>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" type = "text/css"/>
+	<meta name="viewport" content = "width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+	<style type="text/css">
+		html,
+		body {
+		  font-family: 'Josefin Sans', monospace;
+		  height:100%;
+          padding: 5px;
+		}
+	</style>
+
+</head>
+
+<body>
+    <h3>Notes</h3>
+    <br>
+    <ul>
+        {% for note in notes %}
+            <li><a href="/notebook/{{ note }}">{{ note }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <br>
+    <div class="row">
+      <button class="btn btn-primary" type="button" onclick="window.location.href = '/notebook/new_note'">New Note</button>
+    </div>
+</body>

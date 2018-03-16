@@ -11,14 +11,11 @@ import notebook
 app = Flask(__name__, static_folder='static')
 
 logging.basicConfig(level=logging.DEBUG)
+file_handler = logging.FileHandler('flask.log')
+file_handler.setLevel(logging.DEBUG)
+app.logger.addHandler(file_handler)
 log = app.logger
 
-if not app.debug:
-    import logging
-
-    file_handler = logging.FileHandler('flask.log')
-    file_handler.setLevel(logging.DEBUG)
-    app.logger.addHandler(file_handler)
 
 API_KEY = "37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ"
 OLD_API_KEY = "7UoReKEbxnGRMqwkVb9IBvhBmzCtpYdAtPFbnG90"
@@ -27,34 +24,34 @@ header, date, explanation, title, url = "", "", "", "", ""
 images, max_date = [], ""
 
 
-# def get_apod_pics():
-#     log.info(datetime.datetime.now().strftime("%H:%M:%S %d-%m-%Y") + " getting apod data")
-#     global header, date, explanation, title, url
-#     try:
-#         header = "Take a moment and soak in the wonders of space."
-#         response = requests.get("https://api.nasa.gov/planetary/apod?api_key={}".format(API_KEY))
-#         data = response.json()
-#         date = data['date'] + ": NASA's Astronomy Picture of the Day"
-#         explanation = data['explanation']
-#         title = data['title']
-#         link = data['url']
-#         urllib.request.urlretrieve(link, "static/images/apod.jpg")
-#         if 'jpg' in data['url']:
-#             url = "../static/images/apod.jpg"
-#         else:
-#             url = data['url']
-#         bash_command = "convert ../static/images/apod.jpg -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
-#                        " -colorspace RGB ../static/images/apod.jpg"
-#         if os.name == 'posix':
-#             log.info("optimizing apod image")
-#             process = subprocess.Popen(bash_command, shell=True)
-#             process.kill()
-#     except requests.exceptions.ConnectionError:
-#         header, date, explanation, title, url = "", "", "", "", "../static/images/500.jpg"
-#     threading.Timer(600, get_apod_pics).start()
+def get_apod_pics():
+    log.info(datetime.datetime.now().strftime("%H:%M:%S %d-%m-%Y") + " getting apod data")
+    global header, date, explanation, title, url
+    try:
+        header = "Take a moment and soak in the wonders of space."
+        response = requests.get("https://api.nasa.gov/planetary/apod?api_key={}".format(API_KEY))
+        data = response.json()
+        date = data['date'] + ": NASA's Astronomy Picture of the Day"
+        explanation = data['explanation']
+        title = data['title']
+        link = data['url']
+        urllib.request.urlretrieve(link, "static/images/apod.jpg")
+        if 'jpg' in data['url']:
+            url = "../static/images/apod.jpg"
+        else:
+            url = data['url']
+        bash_command = "convert ../static/images/apod.jpg -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
+                       " -colorspace RGB ../static/images/apod.jpg"
+        if os.name == 'posix':
+            log.info("optimizing apod image")
+            process = subprocess.Popen(bash_command, shell=True)
+            process.kill()
+    except requests.exceptions.ConnectionError:
+        header, date, explanation, title, url = "", "", "", "", "../static/images/500.jpg"
+    threading.Timer(600, get_apod_pics).start()
 
 
-# get_apod_pics()
+get_apod_pics()
 
 
 @app.route("/")

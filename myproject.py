@@ -6,7 +6,6 @@ import urllib.request
 import os
 import subprocess
 import datetime
-import notebook
 
 app = Flask(__name__, static_folder='static')
 

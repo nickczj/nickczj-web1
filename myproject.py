@@ -14,7 +14,6 @@ logging.basicConfig(level=logging.DEBUG)
 file_handler = logging.FileHandler('flask.log')
 file_handler.setLevel(logging.DEBUG)
 app.logger.addHandler(file_handler)
-log = app.logger
 
 
 API_KEY = "37fdVwafhb4HlDIIAgFJ6HbIeEk9qdanfQvxkTnQ"
@@ -25,7 +24,7 @@ images, max_date = [], ""
 
 
 def get_apod_pics():
-    log.info(datetime.datetime.now().strftime("%H:%M:%S %d-%m-%Y") + " getting apod data")
+    app.logger.info(datetime.datetime.now().strftime("%H:%M:%S %d-%m-%Y") + " getting apod data")
     global header, date, explanation, title, url
     try:
         header = "Take a moment and soak in the wonders of space."
@@ -43,7 +42,7 @@ def get_apod_pics():
         bash_command = "convert ../static/images/apod.jpg -sampling-factor 4:2:0 -strip -quality 85 -interlace JPEG" \
                        " -colorspace RGB ../static/images/apod.jpg"
         if os.name == 'posix':
-            log.info("optimizing apod image")
+            app.logger.info("optimizing apod image")
             process = subprocess.Popen(bash_command, shell=True)
             process.kill()
     except requests.exceptions.ConnectionError:

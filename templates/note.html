@@ -33,22 +33,15 @@
 <body>
     <div id="form-container" class="container">
 	  <form action="{{ url_for('note_upload', id=id) }}" method="post">
-	    <div class="row">
-	      <div class="col-xs-8">
-	        <div class="form-group">
-	          <label for="display_name">File name</label>
-              {% if "new_note" in id %}
-                  <input class="form-control" name="display_name" type="text">
-              {% else %}
-                  <br>
-                  {{ id }}
-              {% endif %}
-
-	        </div>
-	      </div>
-	    </div>
 	    <div class="row form-group">
 	      <input name="note" type="hidden">
+          {% if "new_note" in id %}
+            <label for="display_name">Filename</label>
+            <input class="form-control" name="display_name" type="text" style="width:50%">
+            <br>
+          {% else %}
+            {{ id }}
+          {% endif %}
 	      <div id="editor-container">
               {{ content }}
 	      </div>

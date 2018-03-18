@@ -73,6 +73,8 @@ def note_upload(id):
     note_body = json.loads(note, strict=False)
     content = note_body['ops'][0]['insert']
     directory = os.fsencode("./static/notes")
+    if id == "new_note":
+        id = request.form['display_name'] + ".txt"
     file = open("./static/notes/{}".format(id), 'w')
     file.write(content)
     notes = [os.fsdecode(file) for file in os.listdir(directory)]

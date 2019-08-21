@@ -49,7 +49,6 @@ def get_apod_pics():
     threading.Timer(600, get_apod_pics).start()
 
 
-get_apod_pics()
 
 
 @app.route("/")
@@ -121,4 +120,5 @@ def keybase():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    get_apod_pics()
+    app.run(debug=True)
